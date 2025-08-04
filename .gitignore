@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# this saves OSX-specific stuff and causes build issues on other platforms
+bun.lock
