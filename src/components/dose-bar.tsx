@@ -7,17 +7,13 @@ import { getBarWidth, getColorIntensity } from '@/lib/half-life';
 
 interface DoseBarProps {
   dose: DoseWithHalfLife;
-  maxCurrentAmount: number; // For relative color scaling
   onClick?: () => void;
 }
 
-export function DoseBar({ dose, maxCurrentAmount, onClick }: DoseBarProps) {
+export function DoseBar({ dose, onClick }: DoseBarProps) {
   const barWidth = getBarWidth(dose.daysSinceDose);
-  
-  // Color based on current amount relative to max current amount
-  const relativeIntensity = maxCurrentAmount > 0 ? dose.currentAmount / maxCurrentAmount : 0;
-  const colorIntensity = Math.max(0.2, relativeIntensity); // Minimum 20% opacity
-  const barColor = getDoseColorWithOpacity(relativeIntensity * 100, colorIntensity);
+  const colorIntensity = getColorIntensity(dose.percentageRemaining);
+  const barColor = getDoseColorWithOpacity(dose.percentageRemaining, colorIntensity);
   
   return (
     <div 
