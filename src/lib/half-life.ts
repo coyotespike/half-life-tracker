@@ -1,4 +1,4 @@
-import { differenceInDays, differenceInHours } from 'date-fns';
+import { differenceInDays, differenceInHours, startOfDay, isSameDay } from 'date-fns';
 import type { Dose, DoseWithHalfLife, DailyLoad } from '@/types/dose';
 
 // Retatrutide half-life: 6.5 days
@@ -12,6 +12,7 @@ export function calculateRemainingAmount(
   initialAmount: number,
   elapsedHours: number
 ): number {
+  if (elapsedHours < 0) return 0;
   return initialAmount * Math.pow(0.5, elapsedHours / HALF_LIFE_HOURS);
 }
 
@@ -22,10 +23,21 @@ export function calculateDoseWithHalfLife(
   dose: Dose,
   currentDate: Date
 ): DoseWithHalfLife {
-  const elapsedHours = differenceInHours(currentDate, dose.timestamp);
+  const doseDate = new Date(dose.timestamp);
+  const daysSinceDose = differenceInDays(currentDate, doseDate);
+
+  if (isSameDay(currentDate, doseDate)) {
+    return {
+      ...dose,
+      currentAmount: dose.amount,
+      percentageRemaining: 100,
+      daysSinceDose: 0,
+    };
+  }
+
+  const elapsedHours = differenceInHours(currentDate, doseDate);
   const currentAmount = calculateRemainingAmount(dose.amount, elapsedHours);
   const percentageRemaining = (currentAmount / dose.amount) * 100;
-  const daysSinceDose = differenceInDays(currentDate, dose.timestamp);
 
   return {
     ...dose,
@@ -42,7 +54,11 @@ export function calculateDailyLoad(
   doses: Dose[],
   targetDate: Date
 ): DailyLoad {
-  const dosesWithHalfLife = doses.map(dose => 
+  const activeDoses = doses.filter(dose => 
+    startOfDay(new Date(dose.timestamp)) <= startOfDay(targetDate)
+  );
+
+  const dosesWithHalfLife = activeDoses.map(dose => 
     calculateDoseWithHalfLife(dose, targetDate)
   );
   
@@ -78,3 +94,4 @@ export function getBarWidth(daysSinceDose: number): number {
   
   return maxWidth - (daysSinceDose / maxDays) * (maxWidth - minWidth);
 }
+

@@ -82,15 +82,19 @@ export function Dashboard({ doses, onAddDose, onEditDose }: DashboardProps) {
           </div>
         ) : (
           <div className="space-y-2">
-            {currentLoad.doses
-              .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-              .map((dose) => (
-                <DoseBar
-                  key={dose.id}
-                  dose={dose}
-                  onClick={() => onEditDose(dose)}
-                />
-              ))}
+            {(() => {
+              const maxCurrentAmount = Math.max(...currentLoad.doses.map(d => d.currentAmount));
+              return currentLoad.doses
+                .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                .map((dose) => (
+                  <DoseBar
+                    key={dose.id}
+                    dose={dose}
+                    maxCurrentAmount={maxCurrentAmount}
+                    onClick={() => onEditDose(dose)}
+                  />
+                ));
+            })()}
           </div>
         )}
       </div>

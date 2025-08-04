@@ -1,6 +1,6 @@
 'use client';
 
-import { format, subDays, isSameDay } from 'date-fns';
+import { format, isSameDay, startOfDay, endOfDay, subDays, eachDayOfInterval } from 'date-fns';
 import type { Dose } from '@/types/dose';
 import { calculateDailyLoad } from '@/lib/half-life';
 import { getDoseColorWithOpacity } from '@/lib/colors';
@@ -10,12 +10,14 @@ interface CalendarViewProps {
 }
 
 export function CalendarView({ doses }: CalendarViewProps) {
-  const today = new Date();
-  const days = Array.from({ length: 14 }, (_, i) => subDays(today, 13 - i));
+  const today = startOfDay(new Date());
+  const startDate = subDays(today, 13);
+
+  const days = eachDayOfInterval({ start: startDate, end: today });
 
   // Calculate loads for each day
   const dailyLoads = days.map(day => {
-    const load = calculateDailyLoad(doses, day);
+    const load = calculateDailyLoad(doses, endOfDay(day));
     return {
       date: day,
       totalLoad: load.totalLoad,
