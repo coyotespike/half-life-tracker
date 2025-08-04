@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { DoseBar } from '@/components/dose-bar';
-import { CalendarView } from '@/components/calendar-view';
-import { DosingHistory } from '@/components/dosing-history';
-import type { Dose, DailyLoad } from '@/types/dose';
-import { calculateDailyLoad } from '@/lib/half-life';
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DoseBar } from "@/components/dose-bar";
+import { CalendarView } from "@/components/calendar-view";
+import { DosingHistory } from "@/components/dosing-history";
+import type { Dose, DailyLoad } from "@/types/dose";
+import { calculateDailyLoad } from "@/lib/half-life";
 
 interface DashboardProps {
   doses: Dose[];
@@ -34,7 +34,9 @@ export function Dashboard({ doses, onAddDose, onEditDose }: DashboardProps) {
     );
   }
 
-  const sortedDoses = currentLoad.doses.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const sortedDoses = currentLoad.doses.sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  );
 
   return (
     <>
@@ -45,7 +47,7 @@ export function Dashboard({ doses, onAddDose, onEditDose }: DashboardProps) {
             Mama{`'`}s Retatrutide Tracker
           </h1>
           <p className="text-gray-600">
-            {format(currentLoad.date, 'EEEE, MMMM d, yyyy')}
+            {format(currentLoad.date, "EEEE, MMMM d, yyyy")}
           </p>
         </div>
 
@@ -54,17 +56,16 @@ export function Dashboard({ doses, onAddDose, onEditDose }: DashboardProps) {
           <div className="text-2xl font-bold text-teal-900 mb-1">
             {currentLoad.totalLoad.toFixed(2)}mg
           </div>
-          <div className="text-teal-700">
-            Current Base Load
-          </div>
+          <div className="text-teal-700">Current Base Load</div>
           <div className="text-sm text-teal-600 mt-1">
-            from {currentLoad.doses.length} active dose{currentLoad.doses.length !== 1 ? 's' : ''}
+            from {currentLoad.doses.length} active dose
+            {currentLoad.doses.length !== 1 ? "s" : ""}
           </div>
         </div>
 
         {/* Add New Dose Button */}
         <div className="flex justify-center">
-          <Button 
+          <Button
             onClick={onAddDose}
             className="bg-teal-600 hover:bg-teal-700 text-white"
             size="lg"
@@ -80,13 +81,11 @@ export function Dashboard({ doses, onAddDose, onEditDose }: DashboardProps) {
             <h2 className="text-xl font-semibold text-gray-900">
               Recent Doses
             </h2>
-            {sortedDoses.length > 3 && (
-              <Button variant="link" onClick={() => setShowHistory(true)}>
-                View Full History
-              </Button>
-            )}
+            <Button variant="link" onClick={() => setShowHistory(true)}>
+              View Full History
+            </Button>
           </div>
-          
+
           {sortedDoses.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               <div className="text-lg mb-2">No doses recorded yet</div>
@@ -106,24 +105,22 @@ export function Dashboard({ doses, onAddDose, onEditDose }: DashboardProps) {
         </div>
 
         {/* Calendar View */}
-        {currentLoad.doses.length > 0 && (
-          <CalendarView doses={doses} />
-        )}
+        {currentLoad.doses.length > 0 && <CalendarView doses={doses} />}
 
         {/* Info Section */}
         <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-600">
           <div className="font-medium mb-2">About Retatrutide Half-Life</div>
           <p>
-            Retatrutide has a half-life of approximately 6.5 days. This means every 6.5 days, 
-            half of the remaining dose is eliminated from your system. The bars above show 
-            the current active amount from each dose, with darker colors indicating higher 
-            concentrations.
+            Retatrutide has a half-life of approximately 6.5 days. This means
+            every 6.5 days, half of the remaining dose is eliminated from your
+            system. The bars above show the current active amount from each
+            dose, with darker colors indicating higher concentrations.
           </p>
         </div>
       </div>
 
       {showHistory && (
-        <DosingHistory 
+        <DosingHistory
           doses={sortedDoses}
           onClose={() => setShowHistory(false)}
         />
